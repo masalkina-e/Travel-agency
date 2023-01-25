@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.btn-primary {
+    @apply text-sm rounded-md p-2 text-slate-600 hover:text-sky-600 font-semibold transition-all duration-300;
+}
