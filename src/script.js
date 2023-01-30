@@ -1,53 +1,44 @@
-let tours = [
-    {
-        image:'images/Batur.jpg',
-        title:'Рассвет на вулкане Батур',
-        discription:'Восхождение на Батур потребует силы и выносливости, но оно того стоит. Это один из действующих вулканов Индонезии, второй по величине на Бали. Внутри кальдеры высотой 1717 метров над уровнем моря находится озеро, а вокруг него – вулканические конусы и кратеры. Особенно впечатляет пейзаж на рассвете, когда вулкан и озеро окутывает розово-голубой утренний туман.',
-        price:'от 3 500 руб',
-        duration:'9 ч',
-        location:'о. Бали'
-    },
-    {
-        image:'images/Gili.jpg',
-        title:'Райские острова Гили',
-        discription:'Острова Гили по праву называют островами "черепах", ведь именно здесь обитают несколько видов гигантских морских черепах, также Гили знамениты красивейшими пляжами с белым песком, вкуснейшими блюдами из морепродуктов и потрясающими закатами.',
-        price:'от 8 000 руб',
-        duration:'от 2-х дней',
-        location:'о. Гили Траванган'
-    },
-    {
-        image:'images/Sekumpul.jpg',
-        title:'Спуск к водопаду Секумпул',
-        discription:'Путь к группе водопадов Секумпул лежит через красивейшие джунги, среди побегов кофе и гвоздики. Сам же водопад Секумпул является самым большим и красивым на Бали, высота водопада достигает 70-80 метров, а для местного населения он является светым местом и был открыт к посещению относительно недавно.',
-        price:'от 2 700 руб',
-        duration:'7 ч',
-        location:'о. Бали'
-    }  
-]
+import { format, differenceInDays  } from 'date-fns'
 
-function renderTours() {
+async function loadTours() {
+    const response = await fetch('https://www.bit-by-bit.ru/api/student-projects/tours')
+    const data = await response.json()
+
     const boxTours = document.getElementById('box-tours')
     boxTours.innerHTML = ""
-    tours.forEach((tour) => {
+    data.forEach((tour) => {
+
+        const duration = differenceInDays(new Date(tour.endTime), new Date(tour.startTime))
+
+        let location = `<span class="text-sm text-slate-600 font-normal text-justify">${tour.city}, ${tour.country}</span>`
+
+        if (tour.city == null ) {
+            location = `<span class="text-sm text-slate-600 font-normal text-justify">${tour.country}</span>`
+        }
+
         boxTours.innerHTML += `
         
         <div class="shadow-2xl rounded-xl mt-20 flex flex-col justify-between bg-white">
 
             <img class="h-60 w-full object-center object-cover rounded-t-xl" src=${tour.image} alt=""/>
+
+            <p class="text-sm text-end px-3 text-slate-600 font-base my-3">Рейтинг: ${tour.rating}</p>
             
             <div class="px-3 grow">
-                <p class="text-lg font-bold my-5">${tour.title}</p>
-                <p class="text-sm text-slate-600 font-normal text-justify">${tour.discription}</p>
+                <p class="text-lg font-bold">${tour.hotelName}</p>
+                ${location}  
             </div>
             
-            <p class="pl-3 pr-7 text-sm text-sky-600 font-semibold pt-4 text-end">${tour.price}</p>
+            <p class="pl-3 pr-7 text-sm font-semibold pt-4">от <span class="text-xl text-sky-600">${tour.price}</span> руб</p>
 
             <div class="px-3 text-sm text-slate-600 mt-2 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg
-                <span class="pl-1">${tour.duration}</span>
-                <span class="px-1">&middot;</span>
-                <svg xmlns=http://www.w3.org/2000/svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
-                <span class="pl-1">${tour.location}</span>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" /></svg>          
+                <span class="pl-1">${format(new Date(tour.startTime),'dd.MM.yyyy')} - ${format(new Date(tour.endTime),'dd.MM.yyyy',)}</span>  
+            </div>
+
+            <div class="px-3 text-sm text-slate-600 mt-2 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span class="pl-1">${duration} дней</span>
             </div>
 
             <div class="px-3 flex items-center justify-between">
@@ -63,17 +54,4 @@ function renderTours() {
     })
 }
 
-function clickHeart() {
-    const emptyHeart = document.getElementById('empty-heart')
-    const fullHeart = document.getElementById('full-heart')  
-
-    emptyHeart.classList.toggle('hidden')
-    fullHeart.classList.toggle('hidden')
-}
-
-const btnHeart = document.getElementById('btn-heart')
-btnHeart.addEventListener('click', clickHeart)
-
-
-
-renderTours()
+loadTours()
