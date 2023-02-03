@@ -1,13 +1,40 @@
 import { format, differenceInDays  } from 'date-fns'
 
-async function renderTours() {
+// let uniqCountry = []
+
+async function loadTours() {
     const response = await fetch('https://www.bit-by-bit.ru/api/student-projects/tours')
     const data = await response.json()
+    return data
+}
 
+function renderDropdown(tours) {
+
+    const selectCountry = document.getElementById('select-country')
+    selectCountry.innerHTML = ""
+    tours.forEach((tour) => {
+        selectCountry.innerHTML +=`
+        <option value="${tour.country}" class="">${tour.country}</option>
+        `
+    })
+}
+
+// function renderUniqCountry(tours, country) {
+//     tours.forEach((country) => {
+//        if (uniqCountry.includes(tour.country)) {
+//           return
+//        }
+//        uniqCountry.push(country)
+//        console.log(uniqCountry)
+//     })
+    
+// }
+
+function renderTours(tours) {
     const boxTours = document.getElementById('box-tours')
     boxTours.innerHTML = ""
 
-    data.forEach((tour) => {
+    tours.forEach((tour) => {
 
         const duration = differenceInDays(new Date(tour.endTime), new Date(tour.startTime))
 
@@ -42,7 +69,7 @@ async function renderTours() {
 
             <div class="px-3 text-sm text-slate-600 mt-2 flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span class="pl-1">${duration} дней</span>
+                <span class="pl-1">${duration} ночей</span>
             </div>
 
             <div class="px-3 flex items-center justify-between">
@@ -52,9 +79,58 @@ async function renderTours() {
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-4 text-yellow-400 hidden" id="full-heart"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z"/></svg>
                 </button>
             </div>
-
         </div>   
-        ` 
+        `  
     })
 }
-renderTours()
+
+function toggleWindowFilterPrice() {
+    const modalWindowFilterPrice = document.getElementById('modal-window-min-max-price')
+    modalWindowFilterPrice.classList.toggle('hidden')
+}
+
+// function filterRating (tours, rating) {
+//     const filteredTours = tours.filter((tour) => {
+//         if (tour.rating >= 7 && tour.rating <= 10) {
+//             return tour.rating === rating
+//         } alert ("Ничего не найдено")
+//     }) 
+//     renderTours(filteredTours) 
+// }
+
+function filterCountry (tours, country) {
+    if (country) {
+        const filteredTours = tours.filter((tour)=> {
+            return tour.country === country
+        })
+        renderTours(filteredTours)
+        console.log (filteredTours)
+    } else {
+        renderTours(tours)
+    } 
+}
+
+async function init() {
+    const tours = await loadTours()
+    renderTours(tours)
+    renderDropdown(tours)
+    // renderUniqCountry(tours)
+    toggleWindowFilterPrice()
+
+    document.getElementById("select-country").addEventListener('change', () => filterCountry(tours,'Мальдивы'))
+    document.getElementById("select-country").addEventListener('change', () => filterCountry(tours,'Индонезия'))
+    document.getElementById("select-country").addEventListener('change', () => filterCountry(tours,'Тайланд'))
+    document.getElementById("select-country").addEventListener('change', () => filterCountry(tours,'Кипр'))
+    document.getElementById("select-country").addEventListener('change', () => filterCountry(tours,'Египет'))
+    document.getElementById("select-country").addEventListener('change', () => filterCountry(tours,'Мексика'))
+    document.getElementById("select-country").addEventListener('change', () => filterCountry(tours,'Танзания'))
+    document.getElementById("btn-all-tours").addEventListener('click', () => filterCountry(tours))
+
+    document.getElementById("btn-enter-min-max-price").addEventListener('click',toggleWindowFilterPrice)
+    document.getElementById("btn-close-min-max-price").addEventListener('click',toggleWindowFilterPrice)
+
+    // document.getElementById("select-rating").addEventListener('change', () => filterRating(tours, rating))
+
+}
+
+init()
