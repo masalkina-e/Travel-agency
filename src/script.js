@@ -1,6 +1,6 @@
 import { format, differenceInDays  } from 'date-fns'
 
-// let uniqCountry = []
+let uniqCountry = []
 
 async function loadTours() {
     const response = await fetch('https://www.bit-by-bit.ru/api/student-projects/tours')
@@ -8,27 +8,37 @@ async function loadTours() {
     return data
 }
 
-function renderDropdown(tours) {
-
+function renderDropdown() {
     const selectCountry = document.getElementById('select-country')
-    selectCountry.innerHTML = ""
-    tours.forEach((tour) => {
+    selectCountry.innerHTML = `
+    <option value="0">Все туры</option>
+    `
+    uniqCountry.forEach((country) => {
         selectCountry.innerHTML +=`
-        <option value="${tour.country}" class="">${tour.country}</option>
+        <option value="${country}">${country}</option>
         `
     })
 }
 
-// function renderUniqCountry(tours, country) {
-//     tours.forEach((country) => {
-//        if (uniqCountry.includes(tour.country)) {
-//           return
-//        }
-//        uniqCountry.push(country)
-//        console.log(uniqCountry)
-//     })
-    
-// }
+function renderUniqCountry(tours) {
+    tours.forEach((tour) => {
+       if (uniqCountry.includes(tour.country)) {
+          return
+       }
+       uniqCountry.push(tour.country)
+       
+       console.log(uniqCountry)
+    })   
+}
+
+// document.addEventListener('click', function(event) {
+//     const e = document.getElementById('modal-window-min-max-price')
+//     if (!e.contains(event.target)) {
+//         e.style.display = 'hidden'
+//     }
+//     console.log(event.target)
+
+// })
 
 function renderTours(tours) {
     const boxTours = document.getElementById('box-tours')
@@ -89,48 +99,101 @@ function toggleWindowFilterPrice() {
     modalWindowFilterPrice.classList.toggle('hidden')
 }
 
-// function filterRating (tours, rating) {
-//     const filteredTours = tours.filter((tour) => {
-//         if (tour.rating >= 7 && tour.rating <= 10) {
-//             return tour.rating === rating
-//         } alert ("Ничего не найдено")
-//     }) 
-//     renderTours(filteredTours) 
+
+// function filterDuration (tours, event) {
+
+//     const allDuration = event.target.dataset.allDuration
+//     const startDuration = event.target.dataset.startDuration
+//     const endDuration = event.target.dataset.endDuration
+    
+//     console.log(allDuration, startDuration, endDuration)
+
+//     tours.forEach((tour) => {
+//         duration = differenceInDays(new Date(tour.endTime), new Date(tour.startTime))
+//     })
+     
+//     if (allDuration == 0) {
+//         renderTours(tours)
+//     } 
+
+//     if (duration >= 14) {
+//         const filteredMore14Duration = tours.filter((tour) => {
+//             return duration >= 14 
+//         })
+//         renderTours(filteredMore14Duration)
+
+//     } else {
+//         const filteredDuration = tours.filter((tour) => {
+//             return duration >= startDuration && duration <= endDuration 
+//         }) 
+//         renderTours(filteredDuration)
+//     }
 // }
 
-function filterCountry (tours, country) {
+function filterDuration (tours, event) {
+
+    const allDuration = event.target.dataset.allDuration
+    const startDuration = event.target.dataset.startDuration
+    const endDuration = event.target.dataset.endDuration
+    
+    console.log (event.target.dataset)
+    console.log(allDuration, startDuration, endDuration)
+
+    const filteredDuration = tours.filter((tour) => {
+        const duration = differenceInDays(new Date(tour.endTime), new Date(tour.startTime))
+        return duration >= startDuration && duration <= endDuration || duration >= 14 
+    })
+
+    if (duration) {
+        renderTours(filteredDuration)
+    } else {
+        renderTours(tours)
+    }    
+}
+
+function filterRating (tours, event) {
+    const rating = event.target.value
+
+    const filteredTours = tours.filter((tour) => {
+        return tour.rating >= rating
+    }) 
+    renderTours(filteredTours)
+}
+
+function filterCountry (tours, event) {
+    const country = event.target.value
+    console.log(country)
+    
     if (country) {
         const filteredTours = tours.filter((tour)=> {
             return tour.country === country
         })
         renderTours(filteredTours)
-        console.log (filteredTours)
-    } else {
-        renderTours(tours)
     } 
+    if (country == 0) {
+        renderTours(tours)
+    }
+}
+
+function showAllTours (tours) {
+    renderTours(tours)
 }
 
 async function init() {
     const tours = await loadTours()
     renderTours(tours)
+    renderUniqCountry(tours)
     renderDropdown(tours)
-    // renderUniqCountry(tours)
     toggleWindowFilterPrice()
 
-    document.getElementById("select-country").addEventListener('change', () => filterCountry(tours,'Мальдивы'))
-    document.getElementById("select-country").addEventListener('change', () => filterCountry(tours,'Индонезия'))
-    document.getElementById("select-country").addEventListener('change', () => filterCountry(tours,'Тайланд'))
-    document.getElementById("select-country").addEventListener('change', () => filterCountry(tours,'Кипр'))
-    document.getElementById("select-country").addEventListener('change', () => filterCountry(tours,'Египет'))
-    document.getElementById("select-country").addEventListener('change', () => filterCountry(tours,'Мексика'))
-    document.getElementById("select-country").addEventListener('change', () => filterCountry(tours,'Танзания'))
-    document.getElementById("btn-all-tours").addEventListener('click', () => filterCountry(tours))
+    document.getElementById("select-country").addEventListener('change', (event) => filterCountry(tours, event))
+    document.getElementById("select-rating").addEventListener('change', (event) => filterRating(tours, event))
+    document.getElementById("select-duration").addEventListener('change', (event) => filterDuration (tours, event)) 
+    
+    document.getElementById("btn-all-tours").addEventListener('click', () => showAllTours(tours))
 
     document.getElementById("btn-enter-min-max-price").addEventListener('click',toggleWindowFilterPrice)
     document.getElementById("btn-close-min-max-price").addEventListener('click',toggleWindowFilterPrice)
-
-    // document.getElementById("select-rating").addEventListener('change', () => filterRating(tours, rating))
-
 }
 
 init()

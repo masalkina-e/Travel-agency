@@ -12,7 +12,7 @@
 
   <body class="bg-gray-100 box-border">
     <div>
-      <div class="max-w-5xl mx-auto py-12 px-8">
+      <div class="max-w-5xl mx-auto py-20 px-8">
 
         <div class="flex justify-end gap-3">
           <button class="btn-primary hover:border border-solid border-sky-600" id="btn-all-tours">Все туры</button>
@@ -35,20 +35,20 @@
           <div class="flex flex-col">
             <label for="rating" class="text-xs text-slate-800">Рейтинг отеля</label>
             <select name="rating" class="select-primary" id="select-rating">
-              <option value="rating">Любой</option>
-              <option value="rating">7.00 и более</option>
-              <option value="rating">8.00 и более</option>
-              <option value="rating">9.00 и более</option>
+              <option value="0">Любой</option>
+              <option value="7">7.00 и более</option>
+              <option value="8">8.00 и более</option>
+              <option value="9">9.00 и более</option>
             </select>
           </div>
 
           <div class="flex flex-col">
             <label for="duration" class="text-xs text-slate-800">Количество ночей</label>
-            <select name="duration" class="select-primary" id="select-duration">
-              <option value="duration">Любое</option>
-              <option value="duration">от 6 до 10</option>
-              <option value="duration">от 10 до 14</option>
-              <option value="duration">от 14</option>
+            <select id="select-duration" name="duration" class="select-primary">
+              <option id="duration0" data-allDuration="0">Любое</option>
+              <option id="duration6" data-startDuration="6" data-endDuration="10">от 6 до 10</option>
+              <option id="duration10" data-startDuration="10" data-endDuration="14">от 10 до 14</option>
+              <option id="duration14" data-startDuration="14">от 14</option>
             </select>
           </div>
 
@@ -80,6 +80,6 @@
       </div>
     </div>
 
-    <script src="/src/app.js" type="module"></script>
+    <script src="/src/script.js" type="module"></script>
   </body>
 </html>
