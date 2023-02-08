@@ -1,6 +1,8 @@
 import { format, differenceInDays  } from 'date-fns'
 
 let uniqCountry = []
+let favoriteTours = []
+let currentFiltersOnThePage = []
 
 async function loadTours() {
     const response = await fetch('https://www.bit-by-bit.ru/api/student-projects/tours')
@@ -26,23 +28,22 @@ function renderUniqCountry(tours) {
           return
        }
        uniqCountry.push(tour.country)
-       
-       console.log(uniqCountry)
+    //    console.log(uniqCountry)
     })   
 }
 
-// document.addEventListener('click', function(event) {
-//     const e = document.getElementById('modal-window-min-max-price')
-//     if (!e.contains(event.target)) {
-//         e.style.display = 'hidden'
-//     }
-//     console.log(event.target)
-
-// })
-
 function renderTours(tours) {
     const boxTours = document.getElementById('box-tours')
+    const boxError = document.getElementById('box-error')
     boxTours.innerHTML = ""
+    boxError.innerHTML = ""
+
+    if (tours.length === 0) {
+        boxError.innerHTML = `
+        <p class="py-52 text-center text-sm text-slate-500">К сожалению, по заданным условиям ничего не найдено. Попробуйте изменить критерии поиска.</p>
+        `
+        return
+    }
 
     tours.forEach((tour) => {
 
@@ -56,6 +57,14 @@ function renderTours(tours) {
         if (tour.city == null ) {
             location = `<span class="text-sm text-slate-600 font-normal text-justify">${tour.country}</span>`
         }
+
+        let iconEmptyHeart =`<svg xmlns=http://www.w3.org/2000/svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-4 text-slate-500" id="empty-heart-${tour.id}"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>`
+        let iconFullHeart =`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-4 text-yellow-400 hidden" id="full-heart-${tour.id}"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z"/></svg>`
+
+        if (favoriteTours.includes(tour.id)) {
+            iconEmptyHeart =`<svg xmlns=http://www.w3.org/2000/svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-4 text-slate-500 hidden" id="empty-heart-${tour.id}"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>`
+            iconFullHeart =`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-4 text-yellow-400 flex" id="full-heart-${tour.id}"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z"/></svg>`
+        } 
 
         boxTours.innerHTML += `
         
@@ -84,71 +93,76 @@ function renderTours(tours) {
 
             <div class="px-3 flex items-center justify-between">
                 <button class="btn-primary border border-solid border-sky-600 w-1/2 my-6">Подробнее</button>
-                <button id="btn-heart">
-                    <svg xmlns=http://www.w3.org/2000/svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-4 text-slate-500" id="empty-heart"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-4 text-yellow-400 hidden" id="full-heart"><path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001a.752.752 0 01-.704 0l-.003-.001z"/></svg>
+                <button id="btn-heart-${tour.id}">
+                    ${iconEmptyHeart}
+                    ${iconFullHeart}
                 </button>
             </div>
         </div>   
         `  
     })
+
+    tours.forEach((tour) => {
+        const btnHeart = document.getElementById(`btn-heart-${tour.id}`)
+
+        function makeAddToFavourites() {
+            addToFavorites(tours, tour.id)
+        }
+        
+        btnHeart.addEventListener('click', makeAddToFavourites)
+    }) 
 }
 
 function toggleWindowFilterPrice() {
     const modalWindowFilterPrice = document.getElementById('modal-window-min-max-price')
-    modalWindowFilterPrice.classList.toggle('hidden')
+    modalWindowFilterPrice.classList.toggle('hidden')   
 }
 
+// document.addEventListener('click', function(event) {
+//     const containerFilterPrice = document.getElementById('container-filter-price')
+//     const modalWindowFilterPrice = document.getElementById('modal-window-min-max-price')
 
-// function filterDuration (tours, event) {
-
-//     const allDuration = event.target.dataset.allDuration
-//     const startDuration = event.target.dataset.startDuration
-//     const endDuration = event.target.dataset.endDuration
-    
-//     console.log(allDuration, startDuration, endDuration)
-
-//     tours.forEach((tour) => {
-//         duration = differenceInDays(new Date(tour.endTime), new Date(tour.startTime))
-//     })
-     
-//     if (allDuration == 0) {
-//         renderTours(tours)
-//     } 
-
-//     if (duration >= 14) {
-//         const filteredMore14Duration = tours.filter((tour) => {
-//             return duration >= 14 
-//         })
-//         renderTours(filteredMore14Duration)
-
+//     if (containerFilterPrice.contains(event.target)) {
+//         toggleWindowFilterPrice()
 //     } else {
-//         const filteredDuration = tours.filter((tour) => {
-//             return duration >= startDuration && duration <= endDuration 
-//         }) 
-//         renderTours(filteredDuration)
+//         modalWindowFilterPrice.style.display = 'none' 
 //     }
-// }
+//     console.log(containerFilterPrice.contains(event.target))
+// })
 
 function filterDuration (tours, event) {
+    const option = event.target.options[event.target.selectedIndex]
+    const allDuration = option.dataset.allduration
+    const startDuration = option.dataset.startduration
+    const endDuration = option.dataset.endduration
+    const moreDuration = option.dataset.moreduration
+    // console.log (option)
+    // console.log(allDuration, startDuration, endDuration, moreDuration)
 
-    const allDuration = event.target.dataset.allDuration
-    const startDuration = event.target.dataset.startDuration
-    const endDuration = event.target.dataset.endDuration
-    
-    console.log (event.target.dataset)
-    console.log(allDuration, startDuration, endDuration)
-
-    const filteredDuration = tours.filter((tour) => {
-        const duration = differenceInDays(new Date(tour.endTime), new Date(tour.startTime))
-        return duration >= startDuration && duration <= endDuration || duration >= 14 
-    })
-
-    if (duration) {
-        renderTours(filteredDuration)
-    } else {
+    if (allDuration == 0) {
         renderTours(tours)
-    }    
+    } else {
+        const filteredDuration = tours.filter((tour) => {
+            const duration = differenceInDays(new Date(tour.endTime), new Date(tour.startTime))
+            return duration >= startDuration && duration <= endDuration || duration >= moreDuration
+        })
+        renderTours(filteredDuration)
+    } 
+}
+
+function filterPrice (tours) {
+    const minPriceValue = document.getElementById('min-price').value
+    const maxPriceValue = document.getElementById('max-price').value
+    // console.log(minPriceValue, maxPriceValue)
+
+    if (minPriceValue.length === 0 && maxPriceValue.length === 0) {
+        renderTours(tours)
+    } else {
+        const filteredPrice = tours.filter((tour) => {
+            return tour.price >= minPriceValue && tour.price <= maxPriceValue || tour.price >= minPriceValue && maxPriceValue.lenght === 0 || tour.price <= maxPriceValue && minPriceValue.lenght === 0    
+        })
+        renderTours(filteredPrice)
+    } 
 }
 
 function filterRating (tours, event) {
@@ -162,7 +176,7 @@ function filterRating (tours, event) {
 
 function filterCountry (tours, event) {
     const country = event.target.value
-    console.log(country)
+    // console.log(country)
     
     if (country) {
         const filteredTours = tours.filter((tour)=> {
@@ -179,21 +193,52 @@ function showAllTours (tours) {
     renderTours(tours)
 }
 
+function addToFavorites(tours, id) {
+    const emptyHeart = document.getElementById(`empty-heart-${id}`)
+    const fullHeart = document.getElementById(`full-heart-${id}`) 
+
+    if (favoriteTours.includes(id)) {
+        const favoriteTour = favoriteTours.find((favoriteTour) => {
+            return favoriteTour.id === id
+        })
+        const favoriteTourIndex = favoriteTours.indexOf(favoriteTour)
+        favoriteTours.splice(favoriteTourIndex, 1)
+
+        emptyHeart.style.display = "flex"
+        fullHeart.style.display = "none"
+        filterToFavorite(tours)
+        return
+    } 
+
+    favoriteTours.unshift(id)
+    emptyHeart.style.display = "none"
+    fullHeart.style.display = "flex"
+}
+
+function filterToFavorite(tours) {
+    const filteredFavoriteTours = tours.filter((tour) => {
+        return favoriteTours.includes(tour.id)   
+    })
+    console.log(filteredFavoriteTours)
+    renderTours(filteredFavoriteTours)   
+}
+
 async function init() {
     const tours = await loadTours()
+    filterToFavorite(tours)
     renderTours(tours)
     renderUniqCountry(tours)
     renderDropdown(tours)
-    toggleWindowFilterPrice()
-
+    
     document.getElementById("select-country").addEventListener('change', (event) => filterCountry(tours, event))
     document.getElementById("select-rating").addEventListener('change', (event) => filterRating(tours, event))
     document.getElementById("select-duration").addEventListener('change', (event) => filterDuration (tours, event)) 
-    
     document.getElementById("btn-all-tours").addEventListener('click', () => showAllTours(tours))
-
     document.getElementById("btn-enter-min-max-price").addEventListener('click',toggleWindowFilterPrice)
     document.getElementById("btn-close-min-max-price").addEventListener('click',toggleWindowFilterPrice)
+    document.getElementById("btn-close-min-max-price").addEventListener('click', () => filterPrice(tours))
+
+    document.getElementById('btn-favorite').addEventListener('click', () => filterToFavorite(tours))
 }
 
 init()
