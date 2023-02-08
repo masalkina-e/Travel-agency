@@ -2,7 +2,6 @@ import { format, differenceInDays  } from 'date-fns'
 
 let uniqCountry = []
 let favoriteTours = []
-let currentFiltersOnThePage = []
 
 async function loadTours() {
     const response = await fetch('https://www.bit-by-bit.ru/api/student-projects/tours')
@@ -203,30 +202,43 @@ function addToFavorites(tours, id) {
         })
         const favoriteTourIndex = favoriteTours.indexOf(favoriteTour)
         favoriteTours.splice(favoriteTourIndex, 1)
-
+        saveToLocalStorage(favoriteTours)
         emptyHeart.style.display = "flex"
         fullHeart.style.display = "none"
-        filterToFavorite(tours)
+        // filterToFavorite(tours)
         return
     } 
 
     favoriteTours.unshift(id)
+    saveToLocalStorage(favoriteTours)
     emptyHeart.style.display = "none"
     fullHeart.style.display = "flex"
 }
+
+const toursJson = localStorage.getItem('tours')
+    if (toursJson) {
+        favoriteTours = JSON.parse(toursJson)
+    }
 
 function filterToFavorite(tours) {
     const filteredFavoriteTours = tours.filter((tour) => {
         return favoriteTours.includes(tour.id)   
     })
-    console.log(filteredFavoriteTours)
+    // console.log(filteredFavoriteTours)
     renderTours(filteredFavoriteTours)   
+    
+}
+
+function saveToLocalStorage(tours) {
+    const toursJson = JSON.stringify(tours)
+    localStorage.setItem('tours', toursJson)
 }
 
 async function init() {
     const tours = await loadTours()
     filterToFavorite(tours)
-    renderTours(tours)
+    
+    renderTours(tours) 
     renderUniqCountry(tours)
     renderDropdown(tours)
     
