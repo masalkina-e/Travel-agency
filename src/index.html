@@ -10,7 +10,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Solitreo&display=swap" rel="stylesheet">
   </head>
 
-  <body class="bg-gray-100 box-border">
+  <body class="bg-gray-100 box-border relative">
+    <div id="modal-window" class="bg-gray-500/50 absolute inset-0 flex justify-center hidden">
+      <div class="bg-white w-9/12 mt-16 fixed py-7 px-10 rounded-xl flex flex-col gap-3">
+        <div id="btn-close-mw" class="flex justify-end"><button class="text-slate-500 cursor">x</button></div>
+
+        <div id="text-selected-tour"></div>
+
+        <p class="text-slate-500 text-sm">Фамилия Имя<span class="text-red-500">*</span></p>
+        <input class="outline-0 border solid rounded-lg py-1.5 px-3.5 text-sm"/>
+
+        <p class="text-slate-500 text-sm">Телефон для связи<span class="text-red-500">*</span></p>
+        <input class="outline-0 border solid rounded-lg py-1.5 px-3.5 text-sm" type="number"/>
+
+        <p class="text-slate-500 text-sm">Email<span class="text-red-500">*</span></p>
+        <input class="outline-0 border solid rounded-lg py-1.5 px-3.5 text-sm"/>
+
+        <p class="text-slate-500 text-sm">Комментарий</p>
+        <textarea class="outline-0 border solid rounded-lg py-1.5 px-3.5 text-sm"></textarea>
+
+        <button class="text-sky-600 font-medium mt-3 transition-all duration-500 ease-linear hover:scale-105">Отправить</button>
+
+      </div>
+    </div>
+
     <div>
       <div class="max-w-5xl mx-auto py-16 px-8">
 
