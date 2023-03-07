@@ -5,3 +5,11 @@
 .btn-primary {
     @apply text-sm rounded-md p-2 text-slate-600 hover:text-sky-600 font-semibold transition-all duration-300;
 }
+
+.select-primary {
+    @apply outline-none outline-1 h-7 mt-1 px-1 rounded text-xs text-slate-600 border-0 hover:outline-sky-600 focus:outline-sky-600;
+}
+
+.input-primary {
+    @apply  rounded border h-7 mt-1 px-1.5 text-xs text-slate-600 hover:border-sky-600 focus:border-sky-600 focus:outline-none;
+}
