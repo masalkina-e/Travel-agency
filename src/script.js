@@ -71,8 +71,10 @@ function renderTours(tours) {
 }
 
 const modalWindow = document.getElementById('modal-window')
+const modalWindowForm = document.getElementById('modal-window-form')
 
 function openModalBook (tours, id) {
+
     const tour = tours.find((tour) => {
         return tour.id === id
     })
@@ -120,22 +122,12 @@ function openModalBook (tours, id) {
     `
     clearForm()
     modalWindow.classList.toggle('hidden')
+    modalWindowForm.classList.toggle('hidden')
     
     async function makeBookTour() {
         const response = await bookTour()
     }
     document.getElementById('btn-send').addEventListener('click', makeBookTour)
-}
-
-function closeModalWindow() {
-    modalWindow.classList.toggle('hidden')
-}
-
-function clearForm() {
-    document.getElementById("name").value = ""
-    document.getElementById("phone").value = ""
-    document.getElementById("email").value = ""
-    document.getElementById("discription").value = ""
 }
 
 async function bookTour() {   
@@ -168,17 +160,27 @@ async function bookTour() {
         console.log(data)
         // return data
 
-        document.getElementById('modal-window-form').innerHTML = `
+        modalWindowForm.classList.toggle('hidden')
+        document.getElementById('modal-window-message').classList.toggle('hidden')
+
+        document.getElementById('modal-window-message').innerHTML = `
             <div class="flex flex-col items-center">
                 <p class="pt-5 text-slate-600 text-center">Запрос на бронирование тура успешно отправлен! В ближайщее время с Вами свяжется наш специалист.</p>
                 <button id="btn-done" class="btn-primary border border-solid border-sky-600 w-1/2 my-6">Готово</button>
             </div>
         `
-        document.getElementById('btn-done').addEventListener('click', closeModalWindow)
+        
+        document.getElementById('btn-done').addEventListener('click', () => {
+            document.getElementById('modal-window-message').classList.toggle('hidden')
+            modalWindow.classList.toggle('hidden')
+        })
 
     } catch (error) {
         console.log (error)
-        document.getElementById('modal-window-form').innerHTML = `
+
+        // document.getElementById('modal-window-form').classList.toggle('hidden')
+
+        document.getElementById('modal-window-message').innerHTML = `
         <div class="flex flex-col items-center">
             <div>
                 <img class="h-44 mt-8" src="/images/error.png" alt=""/>
@@ -187,8 +189,26 @@ async function bookTour() {
             <button id="btn-exit" class="btn-primary border border-solid border-sky-600 w-1/2 my-6">Выйти</button>
         </div>
         `
-        document.getElementById('btn-exit').addEventListener('click', closeModalWindow)
+        // document.getElementById('modal-window-message').classList.toggle("hidden")
+
+        // document.getElementById('btn-exit').addEventListener('click', () => {
+        //     document.getElementById('modal-window-message').classList.toggle("hidden")
+        //     modalWindow.classList.toggle('hidden')
+        // })
     } 
+}
+
+function closeModalWindow() {
+    modalWindow.classList.toggle('hidden')
+    modalWindowForm.classList.toggle('hidden')
+    
+}
+
+function clearForm() {
+    document.getElementById("name").value = ""
+    document.getElementById("phone").value = ""
+    document.getElementById("email").value = ""
+    document.getElementById("discription").value = ""
 }
 
 async function init() {
