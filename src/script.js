@@ -123,11 +123,6 @@ function openModalBook (tours, id) {
     clearForm()
     modalWindow.classList.toggle('hidden')
     modalWindowForm.classList.toggle('hidden')
-    
-    async function makeBookTour() {
-        const response = await bookTour()
-    }
-    document.getElementById('btn-send').addEventListener('click', makeBookTour)
 }
 
 async function bookTour() {   
@@ -157,8 +152,7 @@ async function bookTour() {
            body: JSON.stringify(params)
         })
         let data = await response.json()
-        console.log(data)
-        // return data
+        // console.log(data)
 
         modalWindowForm.classList.toggle('hidden')
         document.getElementById('modal-window-message').classList.toggle('hidden')
@@ -178,7 +172,8 @@ async function bookTour() {
     } catch (error) {
         console.log (error)
 
-        // document.getElementById('modal-window-form').classList.toggle('hidden')
+        modalWindowForm.classList.toggle('hidden')
+        document.getElementById('modal-window-message').classList.toggle('hidden')
 
         document.getElementById('modal-window-message').innerHTML = `
         <div class="flex flex-col items-center">
@@ -189,19 +184,17 @@ async function bookTour() {
             <button id="btn-exit" class="btn-primary border border-solid border-sky-600 w-1/2 my-6">Выйти</button>
         </div>
         `
-        // document.getElementById('modal-window-message').classList.toggle("hidden")
-
-        // document.getElementById('btn-exit').addEventListener('click', () => {
-        //     document.getElementById('modal-window-message').classList.toggle("hidden")
-        //     modalWindow.classList.toggle('hidden')
-        // })
+        
+        document.getElementById('btn-exit').addEventListener('click', () => {
+            document.getElementById('modal-window-message').classList.toggle("hidden")
+            modalWindow.classList.toggle('hidden')
+        })
     } 
 }
 
 function closeModalWindow() {
     modalWindow.classList.toggle('hidden')
     modalWindowForm.classList.toggle('hidden')
-    
 }
 
 function clearForm() {
@@ -214,6 +207,11 @@ function clearForm() {
 async function init() {
     const tours = await loadTours()
     renderTours(tours)
+
+    async function makeBookTour() {
+        await bookTour()
+    }
+    document.getElementById('btn-send').addEventListener('click', makeBookTour)
 
     document.getElementById('btn-close-mw').addEventListener('click', closeModalWindow)
 }
