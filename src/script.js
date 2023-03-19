@@ -2,6 +2,7 @@ import { format, differenceInDays  } from 'date-fns'
 
 let uniqCountry = []
 let favoriteTours = []
+let isFavoritePage = false
 
 async function loadTours() {
     const response = await fetch('https://www.bit-by-bit.ru/api/student-projects/tours')
@@ -113,16 +114,16 @@ function renderTours(tours) {
 }
 
 function toggleWindowFilterPrice() {
-    const modalWindowFilterPrice = document.getElementById('modal-window-min-max-price')
-    modalWindowFilterPrice.classList.toggle('hidden')   
+    document.getElementById('modal-window-min-max-price').classList.toggle('hidden')
 }
 
 // document.addEventListener('click', function(event) {
 //     const containerFilterPrice = document.getElementById('container-filter-price')
 //     const modalWindowFilterPrice = document.getElementById('modal-window-min-max-price')
-
+ 
+//     console.log(event.target)
 //     if (containerFilterPrice.contains(event.target)) {
-//         toggleWindowFilterPrice()
+//         modalWindowFilterPrice.style.display = 'flex'
 //     } else {
 //         modalWindowFilterPrice.style.display = 'none' 
 //     }
@@ -193,40 +194,44 @@ function showAllTours (tours) {
 }
 
 function addToFavorites(tours, id) {
-    const emptyHeart = document.getElementById(`empty-heart-${id}`)
-    const fullHeart = document.getElementById(`full-heart-${id}`) 
 
     if (favoriteTours.includes(id)) {
         const favoriteTour = favoriteTours.find((favoriteTour) => {
-            return favoriteTour.id === id
+            return favoriteTour === id
         })
         const favoriteTourIndex = favoriteTours.indexOf(favoriteTour)
         favoriteTours.splice(favoriteTourIndex, 1)
         saveToLocalStorage(favoriteTours)
-        emptyHeart.style.display = "flex"
-        fullHeart.style.display = "none"
-        // filterToFavorite(tours)
+
+        if (isFavoritePage){
+            filterToFavorite(tours)
+        } else {
+            renderTours(tours)
+        }
         return
     } 
 
     favoriteTours.unshift(id)
     saveToLocalStorage(favoriteTours)
-    emptyHeart.style.display = "none"
-    fullHeart.style.display = "flex"
+    if (isFavoritePage){
+        filterToFavorite(tours)
+    } else {
+        renderTours(tours)
+    }
 }
 
 const toursJson = localStorage.getItem('tours')
-    if (toursJson) {
-        favoriteTours = JSON.parse(toursJson)
-    }
+if (toursJson) {
+    favoriteTours = JSON.parse(toursJson)
+}
 
 function filterToFavorite(tours) {
+    isFavoritePage = true
     const filteredFavoriteTours = tours.filter((tour) => {
         return favoriteTours.includes(tour.id)   
     })
     // console.log(filteredFavoriteTours)
-    renderTours(filteredFavoriteTours)   
-    
+    renderTours(filteredFavoriteTours)     
 }
 
 function saveToLocalStorage(tours) {
@@ -236,7 +241,6 @@ function saveToLocalStorage(tours) {
 
 async function init() {
     const tours = await loadTours()
-    filterToFavorite(tours)
     
     renderTours(tours) 
     renderUniqCountry(tours)
