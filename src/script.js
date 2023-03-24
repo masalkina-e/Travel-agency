@@ -239,10 +239,23 @@ function saveToLocalStorage(tours) {
     localStorage.setItem('tours', toursJson)
 }
 
+let tours 
+const boxLoader = document.getElementById('box-loader')
+
+if (!tours) {
+    boxLoader.innerHTML = `
+    <p class="py-52 text-center text-sm text-slate-500">Loading...</p>
+    `
+}
+
 async function init() {
-    const tours = await loadTours()
+    tours = await loadTours()
+
+    if (tours) {
+        renderTours(tours)
+        boxLoader.innerHTML = ""
+    }
     
-    renderTours(tours) 
     renderUniqCountry(tours)
     renderDropdown(tours)
     
@@ -253,7 +266,6 @@ async function init() {
     document.getElementById("btn-enter-min-max-price").addEventListener('click',toggleWindowFilterPrice)
     document.getElementById("btn-close-min-max-price").addEventListener('click',toggleWindowFilterPrice)
     document.getElementById("btn-close-min-max-price").addEventListener('click', () => filterPrice(tours))
-
     document.getElementById('btn-favorite').addEventListener('click', () => filterToFavorite(tours))
 }
 
