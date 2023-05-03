@@ -1,4 +1,4 @@
-import { format, differenceInDays } from 'date-fns'
+import { format, differenceInDays  } from 'date-fns'
 
 let uniqCountry = []
 let favoriteTours = []
@@ -68,6 +68,7 @@ function renderTours(tours) {
         } 
 
         boxTours.innerHTML += `
+        
         <div class="shadow-2xl rounded-xl mt-20 flex flex-col justify-between bg-white">
 
             <img class="h-60 w-full object-center object-cover rounded-t-xl" src=${tour.image} alt=""/>
@@ -120,61 +121,6 @@ function renderTours(tours) {
         }
         btnBook.addEventListener('click', makeOpenModalBook)
     })
-}
-
-const modalWindow = document.getElementById('modal-window')
-const modalWindowForm = document.getElementById('modal-window-form')
-
-function openModalBook (tours, id) {
-
-    const tour = tours.find((tour) => {
-        return tour.id === id
-    })
-    currentTourId = tour.id
-    console.log(currentTourId)
-
-    const duration = differenceInDays(new Date(tour.endTime), new Date(tour.startTime))
-
-    const currentFormatPrice = tour.price
-    const formatedPrice = currentFormatPrice.toLocaleString('ru-RU')+'.00'
-
-    let location = `<span class="text-sm text-slate-600 font-normal text-justify">${tour.city}, ${tour.country}</span>`
-
-    if (tour.city == null ) {
-        location = `<span class="text-sm text-slate-600 font-normal text-justify">${tour.country}</span>`
-    }
-
-    document.getElementById('render-selected-tour').innerHTML = `
-    
-    <div class="bg-white rounded-t-xl flex justify-between">
-      
-        <div>
-            <div class="grow">
-                 <p class="text-lg font-bold">${tour.hotelName}</p>
-                 ${location}  
-            </div>
-        
-            <p class="text-sm font-semibold pt-4">от <span class="text-xl text-sky-600">${formatedPrice}</span> руб</p>
-
-            <div class="text-sm text-slate-600 mt-2 flex items-center">
-               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" /></svg>          
-               <span class="pl-1">${format(new Date(tour.startTime),'dd.MM.yyyy')} - ${format(new Date(tour.endTime),'dd.MM.yyyy',)}</span>  
-            </div>
-
-            <div class="text-sm text-slate-600 mt-2 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <span class="pl-1">${duration} дней</span>
-            </div> 
-        </div>
-        
-        <div>
-            <img class="h-40 w-full object-center object-cover rounded-xl" src=${tour.image} alt=""/>
-        </div>                
-    </div>
-    `
-    clearForm()
-    modalWindow.classList.toggle('hidden')
-    modalWindowForm.classList.toggle('hidden')
 }
 
 const modalWindow = document.getElementById('modal-window')
@@ -435,6 +381,15 @@ function clearForm() {
     document.getElementById("phone").value = ""
     document.getElementById("email").value = ""
     document.getElementById("discription").value = ""
+}
+
+let tours 
+const boxLoader = document.getElementById('box-loader')
+
+if (!tours) {
+    boxLoader.innerHTML = `
+    <p class="py-52 text-center text-sm text-slate-500">Loading...</p>
+    `
 }
 
 async function init() {
